@@ -1,0 +1,37 @@
+﻿<Page
+    x:Class="xxBLE.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:bleApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.4*" ></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid  Grid.Column="0"  HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBox  Grid.Row="0" x:Name="FindDevice_Name" HorizontalAlignment="Stretch" Text="Arduino" VerticalAlignment="Top"/>
+            <Button Grid.Row="1" x:Name="FindDevice_Button" Content="Find" HorizontalAlignment="Stretch" VerticalAlignment="Top"  Click="FindDevice_Button_Click"/>
+            <TextBlock Grid.Row="2" x:Name="textBlock" HorizontalAlignment="Stretch" VerticalAlignment="Top" Text="ConnField" FontWeight="Bold"/>
+            <TextBox  Grid.Row="3" x:Name="ConnDevice_Id" HorizontalAlignment="Stretch" Text="TextBox" VerticalAlignment="Top"/>
+            <Button Grid.Row="4" x:Name="ConnDevice_Button" Content="Conn" HorizontalAlignment="Stretch" VerticalAlignment="Top"  Click="ConnDevice_Button_Click"/>
+            <Button x:Name="ReadButton" Content="Read" HorizontalAlignment="Center" Margin="0,50.2,0,0" Grid.Row="4" VerticalAlignment="Top" Width="429" Click="ReadButton_Click"/>
+            <Button x:Name="ValueChangedSubscribeToggle" Content="Subscribe" HorizontalAlignment="Center" Margin="0,156.2,0,0" Grid.Row="4" VerticalAlignment="Top" Width="429" Click="ValueChangedSubscribeToggle_Click"/>
+
+        </Grid>
+        <TextBox Grid.Column="1" x:Name="FindDevice_List" AcceptsReturn="True" TextWrapping="Wrap"
+         ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+
+    </Grid>
+</Page>
