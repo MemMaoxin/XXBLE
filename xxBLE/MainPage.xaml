@@ -20,16 +20,35 @@
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            <TextBox  Grid.Row="0" x:Name="FindDevice_Name" HorizontalAlignment="Stretch" Text="Arduino" VerticalAlignment="Top"/>
-            <Button Grid.Row="1" x:Name="FindDevice_Button" Content="Find" HorizontalAlignment="Stretch" VerticalAlignment="Top"  Click="FindDevice_Button_Click"/>
-            <TextBlock Grid.Row="2" x:Name="textBlock" HorizontalAlignment="Stretch" VerticalAlignment="Top" Text="ConnField" FontWeight="Bold"/>
-            <TextBox  Grid.Row="3" x:Name="ConnDevice_Id" HorizontalAlignment="Stretch" Text="TextBox" VerticalAlignment="Top"/>
-            <Button Grid.Row="4" x:Name="ConnDevice_Button" Content="Conn" HorizontalAlignment="Stretch" VerticalAlignment="Top"  Click="ConnDevice_Button_Click"/>
-            <Button x:Name="ReadButton" Content="Read" HorizontalAlignment="Center" Margin="0,50.2,0,0" Grid.Row="4" VerticalAlignment="Top" Width="429" Click="ReadButton_Click"/>
-            <Button x:Name="ValueChangedSubscribeToggle" Content="Subscribe" HorizontalAlignment="Center" Margin="0,156.2,0,0" Grid.Row="4" VerticalAlignment="Top" Width="429" Click="ValueChangedSubscribeToggle_Click"/>
+				<RowDefinition Height="auto"></RowDefinition>
+				<RowDefinition Height="auto"></RowDefinition>
+				<RowDefinition Height="auto"></RowDefinition>
+				<RowDefinition Height="auto"></RowDefinition>
+				<RowDefinition Height="auto"></RowDefinition>
+				<RowDefinition Height="auto"></RowDefinition>
+				<RowDefinition Height="auto"></RowDefinition>
+				<RowDefinition Height="auto"></RowDefinition>
+			</Grid.RowDefinitions>
+			<!--DeviceName Field-->
+			<TextBlock Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Text="DeviceName" FontWeight="Bold"/>
+			<TextBox  Grid.Row="1" x:Name="FindDevice_Name" HorizontalAlignment="Stretch" Text="Arduino" VerticalAlignment="Top"/>
+            <Button Grid.Row="2" x:Name="FindDevice_Button" Content="Find" HorizontalAlignment="Stretch" VerticalAlignment="Top"  Click="FindDevice_Button_Click"/>
+			<!--Device Field-->
+			<TextBlock Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Top" Text="DeviceID" FontWeight="Bold" Margin="0,20,0,0"/>
+            <TextBox  Grid.Row="4" x:Name="ConnDevice_Id" HorizontalAlignment="Stretch" Text="TextBox" VerticalAlignment="Top"/>
+            <Button Grid.Row="5" x:Name="ConnDevice_Button" Content="Conn" HorizontalAlignment="Stretch" VerticalAlignment="Top"  Click="ConnDevice_Button_Click"/>
+			<!--ServiceId Field-->
+			<TextBlock Grid.Row="6" HorizontalAlignment="Stretch" VerticalAlignment="Top" Text="ServiceId" FontWeight="Bold" Margin="0,20,0,0"/>
+			<TextBox  Grid.Row="7" x:Name="ConnService_Id" HorizontalAlignment="Stretch" Text="TextBox" VerticalAlignment="Top"/>
+			<Button Grid.Row="8" x:Name="ReadButton" Content="Read" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="429" Click="ReadButton_Click"/>
+			<Button Grid.Row="9" x:Name="ValueChangedSubscribeToggle" Content="Subscribe" HorizontalAlignment="Stretch" Margin="0,10,0,0" VerticalAlignment="Top" Click="ValueChangedSubscribeToggle_Click"/>
+			<!--Vitual COM Field-->
+			<TextBlock Grid.Row="10" HorizontalAlignment="Stretch" VerticalAlignment="Top" Text="ComPort" FontWeight="Bold" Margin="0,20,0,0"/>
+			<TextBox  Grid.Row="11" x:Name="Com_Name" HorizontalAlignment="Stretch" Text="COM10" VerticalAlignment="Top"/>
+			<Button Grid.Row="12" x:Name="ConnCom_Button" Content="Conn to Com" HorizontalAlignment="Stretch" Margin="0,10,0,0" VerticalAlignment="Top" Click="ConnCom_Button_Click" />
 
-        </Grid>
+
+		</Grid>
         <TextBox Grid.Column="1" x:Name="FindDevice_List" AcceptsReturn="True" TextWrapping="Wrap"
          ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
 

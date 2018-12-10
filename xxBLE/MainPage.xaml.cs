@@ -1,27 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+
 using System.Text;
-using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
+using Windows.Devices.SerialCommunication;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
+
 using Windows.Security.Cryptography;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
-// https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x804 上介绍了“空白页”项模板
 
 namespace xxBLE
 {
@@ -53,7 +44,7 @@ namespace xxBLE
             deviceWatcher.Added += new TypedEventHandler<DeviceWatcher, DeviceInformation>(async (watcher, devInfo) =>
             {
 
-                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     if (FindDevice_Name.Text == "" || devInfo.Name == FindDevice_Name.Text)
                     {
@@ -107,22 +98,15 @@ namespace xxBLE
                 {   
                     FindDevice_List.Text += String.Format("{0} : {1} \r\n", bluetoothLeDevice.Name, service.Uuid);
                     var characteristics = await service.GetCharacteristicsAsync();
+                    var characterCount = 0;
                     foreach (var characteristic in characteristics.Characteristics)
                     {
-                        if (control_a == 5)
-                            character_now = characteristic;
-                        else
-                            control_a++;
-                        var value = await characteristic.ReadValueAsync();
-                        
-                        string bytes = "Read Nothing";
-                        if (value.Status == GattCommunicationStatus.Success)
+                        if (control_a == 5) character_now = characteristic;
+                        if (characteristic.CharacteristicProperties.Equals(GattCharacteristicProperties.Notify))
                         {
-                      //      bytes = ascii.GetString(value.Value.ToArray());
+                            ConnService_Id.Text = service.Uuid.ToString();
                         }
-                        else
-                            bytes = "Read Nothing";
-                        FindDevice_List.Text += String.Format("{0} : {1}\r\n", characteristic.CharacteristicProperties, bytes);
+                        FindDevice_List.Text += String.Format("\t {0} : {1} : {2}\r\n", characterCount++, characteristic.UserDescription, characteristic.CharacteristicProperties);
                     }
                     
                 }
@@ -155,11 +139,8 @@ namespace xxBLE
         private string FormatValue(IBuffer buffer)
         {
             CryptographicBuffer.CopyToByteArray(buffer, out byte[] data);
-
-
             try
             {
-      
                 return BitConverter.ToString(data);
             }
             catch (ArgumentException)
@@ -243,15 +224,8 @@ namespace xxBLE
             ValueChangedSubscribeToggle.Content = "Unsubscribe from value changes";
             if (!subscribedForNotifications)
             {
-         //       FindDevice_List.Text += "add ok";
                 registeredCharacteristic = character_now;
-                 FindDevice_List.Text += "add ok hhh";
-         //       string format = FormatValue(character_now.Value);
-         //       FindDevice_List.Text += String.Format("{0} : {1} : {2} : \r\n", character_now.CharacteristicProperties, "It is", format);
-
                 registeredCharacteristic.ValueChanged += Characteristic_ValueChanged;
-
-                FindDevice_List.Text += "Not Run";
                 subscribedForNotifications = true;
             }
         }
@@ -266,19 +240,30 @@ namespace xxBLE
                 subscribedForNotifications = false;
             }
         }
-        private  async void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+
+        private async void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             // BT_Code: An Indicate or Notify reported that the value has changed.
             // Display the new value with a timestamp.
-            FindDevice_List.Text += "add ok";
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                        () => FindDevice_List.Text += "add ok");
             string newValue = FormatValue(args.CharacteristicValue);
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                        () => FindDevice_List.Text += "add ok1");
             var message = $"Value at {DateTime.Now:hh:mm:ss.FFF}: {newValue}";
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                        () => FindDevice_List.Text = message);
+                        () => FindDevice_List.Text += message);
+        }
+
+        private async void ConnCom_Button_Click(object sender, RoutedEventArgs e)
+        {
+
+            var allPort = await DeviceInformation.FindAllAsync();
+            foreach (var port in allPort) { 
+
+                FindDevice_List.Text += $" found port {port.Id} \r\n";
+
+
+            }
+            //var device = await SerialDevice.FromIdAsync("FTDIBUS\\COMPORT&PID_6015");
+
+                //FindDevice_List.Text += $"Connect to  {Com_Name.Text}: {device.BaudRate}";
         }
 
     }
