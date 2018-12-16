@@ -25,6 +25,8 @@ namespace xxBLE
         private GattCharacteristic character_now;
         private GattCharacteristic registeredCharacteristic;
         ASCIIEncoding ascii = new ASCIIEncoding();
+        SerialDevice device = null;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -102,6 +104,7 @@ namespace xxBLE
                     foreach (var characteristic in characteristics.Characteristics)
                     {
                         if (control_a == 5) character_now = characteristic;
+                        control_a++;
                         if (characteristic.CharacteristicProperties.Equals(GattCharacteristicProperties.Notify))
                         {
                             ConnService_Id.Text = service.Uuid.ToString();
@@ -245,56 +248,40 @@ namespace xxBLE
         {
             // BT_Code: An Indicate or Notify reported that the value has changed.
             // Display the new value with a timestamp.
-            string newValue = FormatValue(args.CharacteristicValue);
+            Windows.Storage.Streams.Buffer buf = new Windows.Storage.Streams.Buffer(args.CharacteristicValue.Length);
+            await device.OutputStream.WriteAsync(args.CharacteristicValue);
+            IBuffer readBuf = await device.InputStream.ReadAsync(buf, buf.Capacity, new InputStreamOptions());
+            string newValue = FormatValue(readBuf);
             var message = $"Value at {DateTime.Now:hh:mm:ss.FFF}: {newValue}";
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                        () => FindDevice_List.Text += message);
+                        () => FindDevice_List.Text = message);
         }
 
-        private void FindCom_Button_Click(object _, RoutedEventArgs e)
+        private async void FindCom_Button_Click(object _, RoutedEventArgs e)
         {
-            string deviceSelector = SerialDevice.GetDeviceSelector();
-            /*
-            var deviceWatcher = DeviceInformation.CreateWatcher(deviceSelector);
-            deviceWatcher.Added += new TypedEventHandler<DeviceWatcher, DeviceInformation>(async (DeviceWatcher sender, DeviceInformation deviceInfo) => {
-                await Dispatcher.RunAsync(
-                    CoreDispatcherPriority.Normal,
-                    new DispatchedHandler(() =>
-                    {
-                        FindDevice_List.Text += $"Find Device  {deviceInfo.Id} : {deviceInfo.Name} \r\n";
-                        Com_Name.Text = deviceInfo.Id;
-                    }));
-            });
-            deviceWatcher.Removed += new TypedEventHandler<DeviceWatcher, DeviceInformationUpdate>(async (DeviceWatcher sender, DeviceInformationUpdate deviceInfo) => {
-                await Dispatcher.RunAsync(
-                    CoreDispatcherPriority.Normal,
-                    new DispatchedHandler(() =>
-                    {
-                        FindDevice_List.Text += $"Remove Device {deviceInfo.Kind} : {deviceInfo.Id} \r\n";
-                    }));
-            });
-            deviceWatcher.EnumerationCompleted += new TypedEventHandler<DeviceWatcher, Object>(async (DeviceWatcher sender, Object deviceInfo) => {
-                await Dispatcher.RunAsync(
-                    CoreDispatcherPriority.Normal,
-                    new DispatchedHandler(() =>
-                    {
-                        FindDevice_List.Text += $"All listed \r\n";
-                    }));
-            });
-            deviceWatcher.Start();
-            */
-
+            FindDevice_List.Text += "COM Device List: \r\n";
+            int count = 0;
+            foreach (var device in await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector()))
+            {
+                FindDevice_List.Text += $"  {count++} : {device.Name} \r\n";
+            }   
         }
 
-        private async void ConnCom_Button_Click(object _, RoutedEventArgs e, GattValueChangedEventArgs args)
+        private async void ConnCom_Button_Click(object _, RoutedEventArgs e)
         {
-            string deviceSelector = SerialDevice.GetDeviceSelector();
-            var dis = await DeviceInformation.FindAllAsync(deviceSelector);
-            var device = await SerialDevice.FromIdAsync(dis[0].Id);
-            FindDevice_List.Text += $"Connect to  {Com_Name.Text}: {device.BaudRate}";
-            IBuffer inp= args.CharacteristicValue
-            var readData = await device.InputStream.ReadAsync(new IBuffer(), 20, new InputStreamOptions());
-            device.OutputStream.WriteAsync();
+            var devices = await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector(Com_Name.Text));
+            if (devices.Count == 1)
+            {
+                device = await SerialDevice.FromIdAsync(devices[0].Id);
+                if (device != null)
+                {
+                    FindDevice_List.Text += $"Connect to  {Com_Name.Text}: {device.BaudRate} \r\n";
+                } 
+                else
+	            {
+                    FindDevice_List.Text += $"Connect to  {Com_Name.Text} Failed \r\n";
+                }
+            }
         }
 
 
