@@ -101,7 +101,9 @@ namespace xxBLE
                     var characterCount = 0;
                     foreach (var characteristic in characteristics.Characteristics)
                     {
-                        if (control_a == 5) character_now = characteristic;
+                        if (control_a == 5)
+                            character_now = characteristic;
+                        control_a++;
                         if (characteristic.CharacteristicProperties.Equals(GattCharacteristicProperties.Notify))
                         {
                             ConnService_Id.Text = service.Uuid.ToString();
