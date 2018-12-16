@@ -253,20 +253,52 @@ namespace xxBLE
                         () => FindDevice_List.Text += message);
         }
 
-        private async void ConnCom_Button_Click(object sender, RoutedEventArgs e)
+        private void FindCom_Button_Click(object _, RoutedEventArgs e)
         {
+            string deviceSelector = SerialDevice.GetDeviceSelector();
+            /*
+            var deviceWatcher = DeviceInformation.CreateWatcher(deviceSelector);
+            deviceWatcher.Added += new TypedEventHandler<DeviceWatcher, DeviceInformation>(async (DeviceWatcher sender, DeviceInformation deviceInfo) => {
+                await Dispatcher.RunAsync(
+                    CoreDispatcherPriority.Normal,
+                    new DispatchedHandler(() =>
+                    {
+                        FindDevice_List.Text += $"Find Device  {deviceInfo.Id} : {deviceInfo.Name} \r\n";
+                        Com_Name.Text = deviceInfo.Id;
+                    }));
+            });
+            deviceWatcher.Removed += new TypedEventHandler<DeviceWatcher, DeviceInformationUpdate>(async (DeviceWatcher sender, DeviceInformationUpdate deviceInfo) => {
+                await Dispatcher.RunAsync(
+                    CoreDispatcherPriority.Normal,
+                    new DispatchedHandler(() =>
+                    {
+                        FindDevice_List.Text += $"Remove Device {deviceInfo.Kind} : {deviceInfo.Id} \r\n";
+                    }));
+            });
+            deviceWatcher.EnumerationCompleted += new TypedEventHandler<DeviceWatcher, Object>(async (DeviceWatcher sender, Object deviceInfo) => {
+                await Dispatcher.RunAsync(
+                    CoreDispatcherPriority.Normal,
+                    new DispatchedHandler(() =>
+                    {
+                        FindDevice_List.Text += $"All listed \r\n";
+                    }));
+            });
+            deviceWatcher.Start();
+            */
 
-            var allPort = await DeviceInformation.FindAllAsync();
-            foreach (var port in allPort) { 
-
-                FindDevice_List.Text += $" found port {port.Id} \r\n";
-
-
-            }
-            //var device = await SerialDevice.FromIdAsync("FTDIBUS\\COMPORT&PID_6015");
-
-                //FindDevice_List.Text += $"Connect to  {Com_Name.Text}: {device.BaudRate}";
         }
+
+        private async void ConnCom_Button_Click(object _, RoutedEventArgs e)
+        {
+            string deviceSelector = SerialDevice.GetDeviceSelector();
+            var dis = await DeviceInformation.FindAllAsync(deviceSelector);
+            var device = await SerialDevice.FromIdAsync(dis[0].Id);
+            FindDevice_List.Text += $"Connect to  {Com_Name.Text}: {device.BaudRate}";
+            System.Buffer inp = new System.Buffer("asd");
+            var readData = await device.InputStream.ReadAsync(new IBuffer(), 20, new InputStreamOptions());
+            device.OutputStream.WriteAsync();
+        }
+
 
     }
 }
