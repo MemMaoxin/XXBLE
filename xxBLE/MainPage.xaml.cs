@@ -288,15 +288,20 @@ namespace xxBLE
 
         }
 
-        private async void ConnCom_Button_Click(object _, RoutedEventArgs e)
+        private async void ConnCom_Button_Click(object _, RoutedEventArgs e, GattValueChangedEventArgs args)
         {
             string deviceSelector = SerialDevice.GetDeviceSelector();
             var dis = await DeviceInformation.FindAllAsync(deviceSelector);
             var device = await SerialDevice.FromIdAsync(dis[0].Id);
             FindDevice_List.Text += $"Connect to  {Com_Name.Text}: {device.BaudRate}";
-            System.Buffer inp = new System.Buffer("asd");
-            var readData = await device.InputStream.ReadAsync(new IBuffer(), 20, new InputStreamOptions());
-            device.OutputStream.WriteAsync();
+            IBuffer inp = args.CharacteristicValue;
+            IBuffer reader = null;
+            await device.OutputStream.WriteAsync(inp);
+            var readData = await device.InputStream.ReadAsync(reader, 40, new InputStreamOptions());
+            string newValue = FormatValue(reader);
+            var message = $"Value at {DateTime.Now:hh:mm:ss.FFF}: {newValue}";
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+            () => FindDevice_List.Text = message); 
         }
 
 
