@@ -25,7 +25,8 @@ namespace xxBLE
         private GattCharacteristic character_now;
         private GattCharacteristic registeredCharacteristic;
         ASCIIEncoding ascii = new ASCIIEncoding();
-        SerialDevice device = null;
+        SerialDevice device_writer = null;
+        SerialDevice device_reader = null;
 
         public MainPage()
         {
@@ -249,12 +250,13 @@ namespace xxBLE
             // BT_Code: An Indicate or Notify reported that the value has changed.
             // Display the new value with a timestamp.
             Windows.Storage.Streams.Buffer buf = new Windows.Storage.Streams.Buffer(args.CharacteristicValue.Length);
-            await device.OutputStream.WriteAsync(args.CharacteristicValue);
-            IBuffer readBuf = await device.InputStream.ReadAsync(buf, buf.Capacity, new InputStreamOptions());
+            await device_writer.OutputStream.WriteAsync(args.CharacteristicValue);
+ /*         IBuffer readBuf = await device_reader.InputStream.ReadAsync(buf, buf.Capacity, new InputStreamOptions());
             string newValue = FormatValue(readBuf);
             var message = $"Value at {DateTime.Now:hh:mm:ss.FFF}: {newValue}";
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                         () => FindDevice_List.Text = message);
+ */
         }
 
         private async void FindCom_Button_Click(object _, RoutedEventArgs e)
@@ -269,19 +271,29 @@ namespace xxBLE
 
         private async void ConnCom_Button_Click(object _, RoutedEventArgs e)
         {
-            var devices = await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector(Com_Name.Text));
-            if (devices.Count == 1)
+            var devices = await DeviceInformation.FindAllAsync(SerialDevice.GetDeviceSelector());
+
+            device_writer = await SerialDevice.FromIdAsync(devices[0].Id);
+            device_writer.BaudRate=57600;
+            if (device_writer != null)
             {
-                device = await SerialDevice.FromIdAsync(devices[0].Id);
-                if (device != null)
-                {
-                    FindDevice_List.Text += $"Connect to  {Com_Name.Text}: {device.BaudRate} \r\n";
-                } 
-                else
-	            {
-                    FindDevice_List.Text += $"Connect to  {Com_Name.Text} Failed \r\n";
-                }
+                FindDevice_List.Text += $"Connect to  {device_writer.PortName}: {device_writer.BaudRate} \r\n";
+            } 
+            else
+	        {
+                FindDevice_List.Text += $"Connect to  {device_writer.PortName} Failed \r\n";
             }
+ /*
+            device_reader = await SerialDevice.FromIdAsync(devices[1].Id);
+            if (device_reader != null)
+            {
+                FindDevice_List.Text += $"Connect to  {device_reader.PortName}: {device_reader.BaudRate} \r\n";
+            }
+            else
+            {
+                FindDevice_List.Text += $"Connect to  {device_reader.PortName} Failed \r\n";
+            }
+ */
         }
 
 
